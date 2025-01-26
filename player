@@ -1,0 +1,83 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 150)
+frame.Position = UDim2.new(1, -210, 0, 10)
+frame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+local textBox = Instance.new("TextBox")
+textBox.Size = UDim2.new(0, 180, 0, 30)
+textBox.Position = UDim2.new(0, 10, 0, 10)
+textBox.PlaceholderText = "Enter player name"
+textBox.BackgroundColor3 = Color3.new(1, 1, 1)
+textBox.TextColor3 = Color3.new(0, 0, 0)
+textBox.Parent = frame
+local printButton = Instance.new("TextButton")
+printButton.Size = UDim2.new(0, 180, 0, 30)
+printButton.Position = UDim2.new(0, 10, 0, 50)
+printButton.Text = "Print Target Position"
+printButton.BackgroundColor3 = Color3.new(0.4, 0.4, 0.8)
+printButton.TextColor3 = Color3.new(1, 1, 1)
+printButton.Parent = frame
+local teleportButton = Instance.new("TextButton")
+teleportButton.Size = UDim2.new(0, 180, 0, 30)
+teleportButton.Position = UDim2.new(0, 10, 0, 90)
+teleportButton.Text = "Teleport to Target"
+teleportButton.BackgroundColor3 = Color3.new(0.8, 0.4, 0.4)
+teleportButton.TextColor3 = Color3.new(1, 1, 1)
+teleportButton.Parent = frame
+local setTargetButton = Instance.new("TextButton")
+setTargetButton.Size = UDim2.new(0, 180, 0, 30)
+setTargetButton.Position = UDim2.new(0, 10, 0, 130)
+setTargetButton.Text = "Set Target Player"
+setTargetButton.BackgroundColor3 = Color3.new(0.4, 0.8, 0.4)
+setTargetButton.TextColor3 = Color3.new(1, 1, 1)
+setTargetButton.Parent = frame
+local targetPlayer = nil
+local function findPlayer(name)
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Name == name then
+            return player
+        end
+    end
+    return nil
+end
+local function printTargetPosition()
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local position = targetPlayer.Character.HumanoidRootPart.Position
+        print("Target Player Position: " .. tostring(position))
+    else
+        print("Target player's character or HumanoidRootPart not found.")
+    end
+end
+local function teleportToTarget()
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local targetPosition = targetPlayer.Character.HumanoidRootPart.Position
+        local localPlayer = game.Players.LocalPlayer
+        if localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition)
+            print("Teleported to " .. targetPlayer.Name)
+        else
+            print("Local player's character or HumanoidRootPart not found.")
+        end
+    else
+        print("Target player's character or HumanoidRootPart not found.")
+    end
+end
+printButton.MouseButton1Click:Connect(printTargetPosition)
+teleportButton.MouseButton1Click:Connect(teleportToTarget)
+setTargetButton.MouseButton1Click:Connect(function()
+    local name = textBox.Text
+    if name ~= "" then
+        targetPlayer = findPlayer(name)
+        if targetPlayer then
+            print("Target player set to: " .. targetPlayer.Name)
+        else
+            print("Player " .. name .. " not found.")
+        end
+    else
+        print("Please enter a player name.")
+    end
+end)
